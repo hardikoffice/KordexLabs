@@ -42,9 +42,9 @@ export default function Footer() {
                     <div>
                         <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Company</h4>
                         <div className="flex flex-col gap-2">
-                            <span className="text-sm text-[var(--muted-foreground)]">About</span>
-                            <span className="text-sm text-[var(--muted-foreground)]">Privacy Policy</span>
-                            <span className="text-sm text-[var(--muted-foreground)]">Terms of Service</span>
+                            <Link href="/about" className="text-sm hover:text-[var(--primary)] transition-colors">About</Link>
+                            <Link href="/privacy" className="text-sm hover:text-[var(--primary)] transition-colors">Privacy Policy</Link>
+                            <Link href="/terms" className="text-sm hover:text-[var(--primary)] transition-colors">Terms of Service</Link>
                         </div>
                     </div>
                 </div>
