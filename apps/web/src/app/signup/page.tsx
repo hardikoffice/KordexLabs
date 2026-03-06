@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 export default function SignupPage() {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
@@ -21,7 +23,7 @@ export default function SignupPage() {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:8001/api/auth/signup", {
+            const response = await fetch(`${API_URL}/api/auth/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ full_name: fullName, email, password }),
@@ -34,7 +36,7 @@ export default function SignupPage() {
             }
 
             // Automatically login after signup
-            const loginResponse = await fetch("http://localhost:8001/api/auth/login", {
+            const loginResponse = await fetch(`${API_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),

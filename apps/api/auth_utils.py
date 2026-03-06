@@ -1,10 +1,11 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 # Configuration
-SECRET_KEY = "kordexlabs_very_secret_key_change_in_production"
+SECRET_KEY = os.getenv("SECRET_KEY", "kordexlabs_very_secret_key_change_in_production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

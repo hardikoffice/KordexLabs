@@ -13,8 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Expose the port FastAPI will run on
-EXPOSE 8000
+# Render assigns PORT dynamically; default to 8000 for local dev
+ENV PORT=8000
+EXPOSE $PORT
 
-# Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use shell form so $PORT is expanded at runtime
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
