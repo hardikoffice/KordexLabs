@@ -12,8 +12,9 @@ if DATABASE_URL.startswith(("postgresql://", "postgres://")):
     is_postgres = True
     # Ensure asyncpg driver
     DATABASE_URL = re.sub(r'^postgres(ql)?://', 'postgresql+asyncpg://', DATABASE_URL)
-    # Strip sslmode from URL (asyncpg uses connect_args instead)
-    DATABASE_URL = re.sub(r'[?&]sslmode=[^&]*', '', DATABASE_URL)
+    # Strip ALL query parameters — asyncpg doesn't understand sslmode, channel_binding, etc.
+    # We handle SSL via connect_args instead
+    DATABASE_URL = DATABASE_URL.split('?')[0]
 
 connect_args = {}
 if is_postgres:
