@@ -37,7 +37,7 @@ export default function Navbar() {
                                 src="/logo.png"
                                 alt="KordexLabs Logo"
                                 fill
-                                className="object-contain transition-transform duration-300 group-hover:scale-110"
+                                className="object-contain transition-transform duration-300 group-hover:scale-110 mix-blend-screen"
                                 priority
                             />
                         </div>

@@ -87,7 +87,7 @@ function SignupContent() {
                                 src="/logo.png"
                                 alt="KordexLabs Logo"
                                 fill
-                                className="p-3 object-contain"
+                                className="p-3 object-contain mix-blend-screen"
                             />
                         </div>
                         <h1 className="text-3xl font-extrabold mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">

@@ -370,7 +370,7 @@ export default function ToolsPage() {
                                         src="/logo.png"
                                         alt="KordexLabs Logo"
                                         fill
-                                        className="object-contain"
+                                        className="object-contain mix-blend-screen"
                                     />
                                 </div>
                                 Interactive Comparison Matrix

@@ -14,7 +14,7 @@ export default function Footer() {
                                     src="/logo.png"
                                     alt="KordexLabs"
                                     fill
-                                    className="object-contain"
+                                    className="object-contain mix-blend-screen"
                                 />
                             </div>
                             <span className="text-lg font-bold bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] bg-clip-text text-transparent">

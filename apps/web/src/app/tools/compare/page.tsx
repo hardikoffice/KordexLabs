@@ -51,7 +51,7 @@ function CompareToolsContent() {
                         src="/logo.png"
                         alt="Logo"
                         fill
-                        className="object-contain"
+                        className="object-contain mix-blend-screen"
                     />
                 </div>
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to AI Tools
