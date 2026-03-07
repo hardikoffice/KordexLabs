@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AICallout from "@/components/AICallout";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -26,6 +28,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <AICallout />
       </body>
     </html>
   );
