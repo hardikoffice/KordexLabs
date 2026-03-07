@@ -12,7 +12,7 @@ interface DashboardStore {
   fetchFavorites: () => Promise<void>;
 }
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
 
 export const useDashboardStore = create<DashboardStore>((set, get) => ({
   savedBlogs: ["1", "3"],
@@ -20,7 +20,10 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   favoriteStocks: [],
   fetchFavorites: async () => {
     try {
-      const token = JSON.parse(localStorage.getItem('auth-storage') || '{}')?.state?.token;
+      const authData = localStorage.getItem('auth-storage');
+      const token = authData ? JSON.parse(authData)?.state?.token : null;
+      console.log("Fetching favorites with token:", token ? "exists" : "missing");
+
       if (!token) return;
 
       const res = await fetch(`${API_BASE}/favorites/`, {
@@ -29,6 +32,8 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
       if (res.ok) {
         const data = await res.json();
         set({ favoriteStocks: data.map((f: any) => f.ticker) });
+      } else {
+        console.error("Fetch favorites failed:", res.status, await res.text());
       }
     } catch (err) {
       console.error("Failed to fetch favorites:", err);
@@ -48,8 +53,15 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
     })),
   toggleFavoriteStock: async (ticker) => {
     const isFav = get().favoriteStocks.includes(ticker);
-    const token = JSON.parse(localStorage.getItem('auth-storage') || '{}')?.state?.token;
-    if (!token) return;
+    const authData = localStorage.getItem('auth-storage');
+    const token = authData ? JSON.parse(authData)?.state?.token : null;
+
+    console.log(`Toggling favorite for ${ticker}. Current isFav: ${isFav}. Token: ${token ? "exists" : "missing"}`);
+
+    if (!token) {
+      console.warn("No auth token found, cannot toggle favorite.");
+      return;
+    }
 
     try {
       if (isFav) {
@@ -59,6 +71,8 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
         });
         if (res.ok) {
           set((s) => ({ favoriteStocks: s.favoriteStocks.filter((t) => t !== ticker) }));
+        } else {
+          console.error("Delete favorite failed:", res.status, await res.text());
         }
       } else {
         const res = await fetch(`${API_BASE}/favorites/`, {
@@ -71,6 +85,8 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
         });
         if (res.ok) {
           set((s) => ({ favoriteStocks: [...s.favoriteStocks, ticker] }));
+        } else {
+          console.error("Post favorite failed:", res.status, await res.text());
         }
       }
     } catch (err) {
