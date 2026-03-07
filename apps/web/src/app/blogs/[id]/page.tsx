@@ -16,7 +16,7 @@ export default function BlogDetailPage() {
     useEffect(() => {
         fetchSavedBlogs();
     }, [fetchSavedBlogs]);
-    传输
+    
     useEffect(() => {
         const handleScroll = () => {
             const scrollTop = window.scrollY;
