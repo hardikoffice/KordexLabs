@@ -1,6 +1,5 @@
-"use client";
 import { create } from "zustand";
-
+import { useNotificationStore } from "@/store/notificationStore";
 
 interface DashboardStore {
   savedBlogs: string[];
@@ -55,11 +54,13 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
     const isFav = get().favoriteStocks.includes(ticker);
     const authData = localStorage.getItem('auth-storage');
     const token = authData ? JSON.parse(authData)?.state?.token : null;
+    const { addNotification } = useNotificationStore.getState();
 
     console.log(`Toggling favorite for ${ticker}. Current isFav: ${isFav}. Token: ${token ? "exists" : "missing"}`);
 
     if (!token) {
       console.warn("No auth token found, cannot toggle favorite.");
+      addNotification("Please login to save favorites", "info");
       return;
     }
 
@@ -71,8 +72,10 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
         });
         if (res.ok) {
           set((s) => ({ favoriteStocks: s.favoriteStocks.filter((t) => t !== ticker) }));
+          addNotification(`${ticker} removed from favorites`, "info");
         } else {
           console.error("Delete favorite failed:", res.status, await res.text());
+          addNotification(`Failed to remove ${ticker}`, "error");
         }
       } else {
         const res = await fetch(`${API_BASE}/favorites/`, {
@@ -85,12 +88,15 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
         });
         if (res.ok) {
           set((s) => ({ favoriteStocks: [...s.favoriteStocks, ticker] }));
+          addNotification(`${ticker} added to favorites!`, "success");
         } else {
           console.error("Post favorite failed:", res.status, await res.text());
+          addNotification(`Failed to add ${ticker}`, "error");
         }
       }
     } catch (err) {
       console.error("Toggle favorite failed:", err);
+      addNotification("Network error. Please try again.", "error");
     }
   },
 }));

@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AICallout from "@/components/AICallout";
+import NotificationManager from "@/components/NotificationManager";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,6 +30,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <AICallout />
+        <NotificationManager />
       </body>
     </html>
   );
