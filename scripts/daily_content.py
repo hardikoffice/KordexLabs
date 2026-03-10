@@ -57,9 +57,6 @@ def get_market_intelligence() -> str:
 def generate_content(data: str, article_type: str) -> Dict:
     print(f"Generating {article_type} content via Gemini (google-genai)...")
     
-def generate_content(data: str, article_type: str) -> Dict:
-    print(f"Generating {article_type} content via Gemini (google-genai)...")
-    
     prompt = (
         "You are a Senior AI Technical Writer & SEO Expert at KordexLabs. "
         "Your goal is to write a high-quality, engaging, and SEO-optimized blog post based on provided news/data.\n\n"
@@ -161,7 +158,7 @@ def git_automation(slug: str, title: str):
         
         # Create PR using GH CLI
         pr_title = f"Daily AI Content (Gemini): {title}"
-        pr_body = f"Automated daily content generation using Gemini 1.5 Pro for {datetime.date.today().isoformat()}.\n\n- **Title**: {title}\n- **Slug**: {slug}"
+        pr_body = f"Automated daily content generation using Gemini Flash for {datetime.date.today().isoformat()}.\n\n- **Title**: {title}\n- **Slug**: {slug}"
         subprocess.run([
             "gh", "pr", "create", 
             "--title", pr_title, 
