@@ -57,6 +57,15 @@ def get_market_intelligence() -> str:
 def generate_content(data: str, article_type: str) -> Dict:
     print(f"Generating {article_type} content via Gemini (google-genai)...")
     
+    # Debug: List available models to console logs in case of failure
+    try:
+        print("Available models:")
+        for m in client.models.list():
+            if 'generateContent' in m.supported_generation_methods:
+                print(f" - {m.name}")
+    except Exception as e:
+        print(f"Could not list models: {e}")
+
     prompt = (
         "You are a Senior AI Technical Writer & SEO Expert at KordexLabs. "
         "Your goal is to write a high-quality, engaging, and SEO-optimized blog post based on provided news/data.\n\n"
@@ -76,16 +85,15 @@ def generate_content(data: str, article_type: str) -> Dict:
         f"Data: {data}\n"
     )
     
-    # Using the new google-genai SDK 
+    # Using the latest gemini-2.0-flash for best compatibility
     response = client.models.generate_content(
-        model='gemini-1.5-flash',
+        model='gemini-2.0-flash',
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type='application/json'
         )
     )
     
-    # With JSON mode, response.text should already be valid JSON
     return json.loads(response.text)
 
 def generate_image(prompt: str, slug: str) -> str:
