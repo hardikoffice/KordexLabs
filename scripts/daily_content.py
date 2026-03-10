@@ -172,5 +172,36 @@ def git_automation(slug: str, title: str):
     except subprocess.CalledProcessError as e:
         print(f"Git/PR Error: {e}")
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true", help="Generate content without committing to Git")
+    args = parser.parse_args()
+
+    # 1. 70/30 Logic
+    roll = random.random()
+    if roll < 0.70:
+        article_type = "Trending AI News"
+        data = get_trending_ai_news()
+    else:
+        article_type = "AI Market Intelligence & Stock Analysis"
+        data = get_market_intelligence()
+
+    # 2. Generate Content
+    content_data = generate_content(data, article_type)
+    
+    # 3. Generate Image
+    if args.dry_run:
+        print("[DRY RUN] Skipping image generation and Git automation.")
+        print(json.dumps(content_data, indent=2))
+        return
+
+    image_url = generate_image(content_data['image_prompt'], content_data['slug'])
+    
+    # 4. Save MDX
+    save_mdx(content_data, image_url)
+    
+    # 5. Git Automation
+    git_automation(content_data['slug'], content_data['title'])
+
 if __name__ == "__main__":
     main()
