@@ -59,3 +59,15 @@ async def create_blog(blog: BlogCreate, db: AsyncSession = Depends(get_db)):
     # Convert tags back to list for response
     db_blog.tags = db_blog.tags.split(",") if db_blog.tags else []
     return db_blog
+
+
+@router.delete("/blogs/{blog_id}")
+async def delete_blog(blog_id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Blog).where(Blog.id == blog_id))
+    blog = result.scalars().first()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Blog not found")
+    
+    await db.delete(blog)
+    await db.commit()
+    return {"message": "Blog deleted successfully"}

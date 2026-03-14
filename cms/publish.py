@@ -12,10 +12,13 @@ API_URL = os.getenv("CMS_API_URL", DEFAULT_API_URL)
 
 # Optional ImgBB Setup
 IMGBB_API_KEY = os.getenv("IMGBB_API_KEY")
-IMGBB_AVAILABLE = bool(IMGBB_API_KEY)
+IMGBB_AVAILABLE = bool(IMGBB_API_KEY) and IMGBB_API_KEY != "<your_imgbb_api_key>"
 
 if not IMGBB_AVAILABLE:
-    st.warning("ImgBB credentials not found in environment variables. Image uploads will fall back to URLs only.")
+    if IMGBB_API_KEY == "<your_imgbb_api_key>":
+        st.error("⚠️ You are using the placeholder ImgBB API key. Please replace it with your real key in `.env`.")
+    else:
+        st.warning("ImgBB credentials not found in environment variables. Image uploads will fall back to URLs only.")
 
 st.set_page_config(page_title="KordexLabs CMS", layout="wide")
 
@@ -56,7 +59,35 @@ try:
         blogs = existing.json()
         if blogs:
             for b in blogs:
-                st.sidebar.markdown(f"• **{b.get('title', 'Untitled')}** — {b.get('author', 'Unknown')}")
+                col_text, col_del = st.sidebar.columns([0.8, 0.2])
+                with col_text:
+                    st.markdown(f"• **{b.get('title', 'Untitled')}**")
+                with col_del:
+                    if st.button("🗑️", key=f"del_{b.get('id')}", help="Delete this article"):
+                        # Use session state to confirm deletion
+                        st.session_state[f"confirm_delete_{b.get('id')}"] = True
+                
+                # Show confirmation if button clicked
+                if st.session_state.get(f"confirm_delete_{b.get('id')}", False):
+                    st.sidebar.warning("Are you sure?")
+                    c1, c2 = st.sidebar.columns(2)
+                    with c1:
+                        if st.button("Yes", key=f"yes_{b.get('id')}"):
+                            try:
+                                # Call backend DELETE endpoint
+                                del_url = f"{API_URL}/{b.get('id')}"
+                                del_res = requests.delete(del_url, timeout=10)
+                                if del_res.status_code == 200:
+                                    st.sidebar.success("Deleted!")
+                                    st.rerun()
+                                else:
+                                    st.sidebar.error(f"Failed: {del_res.status_code}")
+                            except Exception as e:
+                                st.sidebar.error(f"Error: {e}")
+                    with c2:
+                        if st.button("No", key=f"no_{b.get('id')}"):
+                            st.session_state[f"confirm_delete_{b.get('id')}"] = False
+                            st.rerun()
         else:
             st.sidebar.caption("No articles published yet.")
     else:
