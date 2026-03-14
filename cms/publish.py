@@ -126,7 +126,10 @@ if submit:
                 try:
                     # Upload file to Cloudinary
                     st.info("Uploading image to Cloudinary...")
-                    upload_result = cloudinary.uploader.upload(hero_image.getvalue())
+                    # Streamlit's UploadedFile is a subclass of BytesIO that cloudinary handles natively, but it's safer to read the bytes directly or pass raw bytes
+                    # Since we are sending a buffer we must use the 'read()' method or read all bytes natively
+                    image_bytes = hero_image.read()
+                    upload_result = cloudinary.uploader.upload(image_bytes)
                     final_image_url = upload_result.get("secure_url", image_url_input)
                     st.success("Image uploaded successfully!")
                 except Exception as e:
