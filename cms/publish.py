@@ -74,14 +74,16 @@ try:
                     with c1:
                         if st.button("Yes", key=f"yes_{b.get('id')}"):
                             try:
-                                # Call backend DELETE endpoint
-                                del_url = f"{API_URL}/{b.get('id')}"
+                                # Call backend DELETE endpoint - ensuring no double slashes
+                                base_api = API_URL.rstrip("/")
+                                del_url = f"{base_api}/{b.get('id')}"
                                 del_res = requests.delete(del_url, timeout=10)
                                 if del_res.status_code == 200:
                                     st.sidebar.success("Deleted!")
                                     st.rerun()
                                 else:
                                     st.sidebar.error(f"Failed: {del_res.status_code}")
+                                    st.sidebar.code(del_res.text)
                             except Exception as e:
                                 st.sidebar.error(f"Error: {e}")
                     with c2:
