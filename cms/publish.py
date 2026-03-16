@@ -10,15 +10,10 @@ load_dotenv()
 DEFAULT_API_URL = "https://kordexlabs.onrender.com/api/blogs"
 API_URL = os.getenv("CMS_API_URL", DEFAULT_API_URL)
 
-# Optional ImgBB Setup
-IMGBB_API_KEY = os.getenv("IMGBB_API_KEY")
-IMGBB_AVAILABLE = bool(IMGBB_API_KEY) and IMGBB_API_KEY != "<your_imgbb_api_key>"
-
-if not IMGBB_AVAILABLE:
-    if IMGBB_API_KEY == "<your_imgbb_api_key>":
-        st.error("⚠️ You are using the placeholder ImgBB API key. Please replace it with your real key in `.env`.")
-    else:
-        st.warning("ImgBB credentials not found in environment variables. Image uploads will fall back to URLs only.")
+# R2 Setup (via Hono Worker)
+# We use the Hono worker's API for uploads
+IMGBB_AVAILABLE = False # Legacy
+R2_AVAILABLE = True
 
 st.set_page_config(page_title="KordexLabs CMS", layout="wide")
 
@@ -127,34 +122,33 @@ if submit:
         with st.spinner("Publishing..."):
             final_image_url = image_url_input
             
-            # Handle Upload to ImgBB if file provided
-            if hero_image and IMGBB_AVAILABLE:
+            # Handle Upload to R2 if file provided
+            if hero_image:
                 try:
-                    # Upload file to ImgBB
-                    st.info("Uploading image to ImgBB...")
+                    # Upload file to Hono Worker -> R2
+                    st.info("Uploading image to Cloudflare R2...")
                     
-                    import base64
-                    image_base64 = base64.b64encode(hero_image.read()).decode('utf-8')
+                    # API_URL is likely ".../api/blogs", we need ".../api/images/upload"
+                    base_url = API_URL.split("/api")[0]
+                    upload_endpoint = f"{base_url}/api/images/upload"
+                    
+                    # Send as multipart/form-data
+                    files = {"image": (hero_image.name, hero_image, hero_image.type)}
                     
                     upload_response = requests.post(
-                        "https://api.imgbb.com/1/upload",
-                        data={
-                            "key": IMGBB_API_KEY,
-                            "image": image_base64
-                        },
+                        upload_endpoint,
+                        files=files,
                         timeout=30
                     )
                     
                     if upload_response.status_code == 200:
                         upload_result = upload_response.json()
-                        final_image_url = upload_result["data"]["url"]
-                        st.success("Image uploaded successfully!")
+                        final_image_url = upload_result["url"]
+                        st.success("Image uploaded to R2 successfully!")
                     else:
-                        st.error(f"Image upload failed with status {upload_response.status_code}: {upload_response.text}")
+                        st.error(f"R2 upload failed with status {upload_response.status_code}: {upload_response.text}")
                 except Exception as e:
                     st.error(f"Image upload error: {e}")
-            elif hero_image and not IMGBB_AVAILABLE:
-                st.error("Cannot upload image because 'IMGBB_API_KEY' is missing.")
             
             payload = {
                 "title": title,

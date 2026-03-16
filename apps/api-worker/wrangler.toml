@@ -1,0 +1,20 @@
+name = "kordexlabs-api"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kordexlabs-db"
+database_id = "bd68f759-276f-4540-b236-541c593ea8c9" # Updated with user ID
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "kordexlabs-images"
+
+[vars]
+# API keys and other environment variables
+# IMGBB_API_KEY is legacy, but we might keep it during transition
+# Better to use Cloudflare Secrets for real keys
+ENVIRONMENT = "local"
